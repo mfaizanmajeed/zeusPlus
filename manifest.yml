@@ -1,0 +1,25 @@
+---
+applications:
+  - name: faizi-predix-webapp
+    memory: 256M
+    timeout: 180
+    buildpack: nodejs_buildpack
+    command: node server/app.js
+    path: dist
+services:
+    - faizi-uaa
+    - faizi-time_series
+    - faizi-asset
+    - faizi-redis	
+
+env:
+    node_env: cloud
+    uaa_service_label : predix-uaa
+    UAA_SERVER_URL: https://92fb1b3a-7858-4fe8-ba05-d7f6d87dfa63.predix-uaa.run.aws-usw02-pr.ice.predix.io	
+    # Add these values for authentication in the cloud
+    base64ClientCredential: ZmFpemkxMjM6bm9tYW4=
+    loginBase64ClientCredential: ZmFpemk6bm9tYW4=
+    # Use a full wss:// URL for actual web socket server. use /livestream for mock data.
+    websocketServerURL: wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages
+    rmdDatasourceURL: https://zeus-client.run.aws-usw02-pr.ice.predix.io
+    rmdDocsURL: "https://raw.githubusercontent.com/PredixDev/predix-rmd-ref-app/master/README.md"

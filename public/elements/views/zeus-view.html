@@ -1,0 +1,422 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html ">
+<link rel="import" href="../../bower_components/px-sample-cards/blank-card.html">
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../kpi-bar/kpi-bar.html">
+
+
+<dom-module id="zeus-view">
+  <template>
+      
+  
+  <px-card icon='fa-lightbulb-o' header-text="Power Factor">
+      <px-vis-timeseries id="Power-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Power}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{EFFanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+    <kpi-bar 
+      datapoints={{KPIPFA}}
+      overall-label="Percentage"
+      overall-value={{KPIBARPFA}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+    <px-card icon='fa-sun-o' header-text="Temperature (°C)">
+      <px-vis-timeseries id="Temperature-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Temperature}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{EFFanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+    <kpi-bar 
+      datapoints={{KPITEMP}}
+      overall-label="Percentage"
+      overall-value={{KPIBARTEMP}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+    <px-card icon='fa-bolt' header-text="Voltage (V)">
+      <px-vis-timeseries id="Voltage-chart"
+      height="200"
+      width="1000"
+      prevent-resize="true"
+      selection-type="xy"
+      register-location="top"
+      chart-data={{Voltage}}
+      include-all-series="true"></px-vis-timeseries>
+
+      <px-data-table table-data="{{IPanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+    <kpi-bar 
+      datapoints={{KPI}}
+      overall-label="Percentage"
+      overall-value={{KPIBAR}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+
+     <px-card icon='fa-star-o' header-text="Freqency (Hz)">
+      <px-vis-timeseries id="Frquency-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Freqency}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{OPanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+    <kpi-bar 
+      datapoints={{KPIFREQ}}
+      overall-label="Percentage"
+      overall-value={{KPIBARFREQ}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+    <iron-ajax id="requestKPI"
+      auto url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VRMSA"
+      handle-as="json"
+      on-response="_onResponseKPI"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBAR"
+      auto url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VRMSA"
+      handle-as="json"
+      on-response="_onResponseKPIBAR"></iron-ajax>    
+
+     <iron-ajax id="requestKPIPFA"
+      auto url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:PFA"
+      handle-as="json"
+      on-response="_onResponseKPIPFA"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARPFA"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:PFA"
+      handle-as="json"
+      on-response="_onResponseKPIBARPFA"></iron-ajax>  
+
+    <iron-ajax id="requestKPITEMP"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:TEMP"
+      handle-as="json"
+      on-response="_onResponseKPITEMP"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARTEMP"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:TEMP"
+      handle-as="json"
+      on-response="_onResponseKPIBARTEMP"></iron-ajax>     
+
+    <iron-ajax id="requestKPIFREQ"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:FREQ"
+      handle-as="json"
+      on-response="_onResponseKPIFREQ"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARFREQ"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:FREQ"
+      handle-as="json"
+      on-response="_onResponseKPIBARFREQ"></iron-ajax>
+  
+    <iron-ajax id="requestFREQ"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:FREQ"
+      handle-as="json"
+      on-response="_onResponseFREQ"></iron-ajax>
+
+    <iron-ajax id="requestVRMSA"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:VRMSA"
+      handle-as="json"
+      on-response="_onResponseVRMSA"></iron-ajax>
+
+    <iron-ajax id="requestPFA"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:PFA"
+      handle-as="json"
+      on-response="_onResponsePFA"></iron-ajax>
+
+    <iron-ajax id="requestTEMP"
+      auto  url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:TEMP"
+      handle-as="json"
+      on-response="_onResponseTEMP"></iron-ajax>
+    
+
+     
+  </template>
+  <script>
+    Polymer({
+      is: 'zeus-view',
+      properties: {
+        Freqency: {
+            computed: 'computeGENDATA(FREQData)'
+        },
+        
+        Voltage: {
+            computed: 'computeGENDATA(VRMSAData)'
+        },
+        Power: {
+            computed: 'computeGENDATA(PFAData)'
+        },
+        Temperature: {
+            computed: 'computeGENDATA(TEMPData)'
+        },
+        KPI: {
+            computed: 'computeKPIDATA(KPIData,"Voltage","V")'
+            
+        },
+        KPIBAR: {
+            computed: 'computeKPIBARDATA(KPIBARData,240)'
+            
+        },
+
+         KPIPFA: {
+            computed: 'computeKPIDATA(KPIPFAData,"P.F"," ")'
+            
+        },
+
+         KPIBARPFA: {
+            computed: 'computeKPIBARDATA(KPIBARPFAData,1)'
+            
+        },
+
+         KPITEMP: {
+            computed: 'computeKPIDATA(KPITEMPData,"Temperature","°C")'
+            
+        },
+
+         KPIBARTEMP: {
+            computed: 'computeKPIBARDATA(KPIBARTEMPData,50)'
+            
+        },
+
+         KPIFREQ: {
+            computed: 'computeKPIDATA(KPIFREQData,"Frequency","Hz")'
+            
+        },
+
+         KPIBARFREQ: {
+            computed: 'computeKPIBARDATA(KPIBARFREQData,52)'
+            
+        },
+
+        FREQData:{
+            type: Array
+        },
+        VRMSAData:{
+            type: Array
+        },
+        PFAData:{
+            type: Array
+        },
+        TEMPData:{
+            type: Array
+        },
+
+        KPIData:{
+            type: Array
+        },
+
+        KPIBARData:{
+            type: Array
+        },
+
+        KPIPFAData:{
+            type: Array
+        },
+
+        KPIBARPFAData:{
+            type: Array
+        },
+        KPITEMPData:{
+            type: Array
+        },
+
+        KPIBARTEMPData:{
+            type: Array
+        },
+        KPIFREQData:{
+            type: Array
+        },
+
+        KPIBARFREQData:{
+            type: Array
+        }
+        
+        
+        
+      },
+      _onResponseFREQ:function(query){
+        this.FREQData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestFREQ.generateRequest();
+        //console.log(this.FREQData[0] );
+        }, 15000);
+      },
+
+       _onResponseVRMSA:function(query){
+        this.VRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestVRMSA.generateRequest();
+        //  console.log(this.VRMSAData );
+        }, 15000);
+      },
+
+       _onResponsePFA:function(query){
+        this.PFAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestPFA.generateRequest();
+        //  console.log(this.PFAData );
+        }, 15000);
+      },
+
+       _onResponseTEMP:function(query){
+        this.TEMPData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestTEMP.generateRequest();
+        //  console.log(this.TEMPData );
+        }, 15000);
+      },
+
+       _onResponseKPI:function(query){
+        this.KPIData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPI.generateRequest();
+         // console.log(this.KPIData );
+        }, 15000);
+      },
+
+       _onResponseKPIBAR:function(query){
+        this.KPIBARData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBAR.generateRequest();
+         // console.log(this.KPIBARData );
+        }, 15000);
+      },
+
+       _onResponseKPIPFA:function(query){
+        this.KPIPFAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIPFA.generateRequest();
+         // console.log(this.KPIPFAData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARPFA:function(query){
+        this.KPIBARPFAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARPFA.generateRequest();
+         // console.log(this.KPIBARPFAData );
+        }, 15000);
+      },
+
+       _onResponseKPITEMP:function(query){
+        this.KPITEMPData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPITEMP.generateRequest();
+         // console.log(this.KPITEMPData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARTEMP:function(query){
+        this.KPIBARTEMPData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARTEMP.generateRequest();
+         // console.log(this.KPIBARTEMPData );
+        }, 15000);
+      },
+
+       _onResponseKPIFREQ:function(query){
+        this.KPIFREQData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIFREQ.generateRequest();
+         // console.log(this.KPIFREQData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARFREQ:function(query){
+        this.KPIBARFREQData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARFREQ.generateRequest();
+         // console.log(this.KPIBARFREQData );
+        }, 15000);
+      },
+      
+
+      computeGENDATA:function(data1){
+     // console.log("computeGENDATA:",data1.length)
+        if (data1.length>0)
+        {
+            var arrayOfObjects=[];
+            for(var i=0;i<data1.length;i++){
+              var jsonobject={};
+              var arr1=data1[i];
+              var timestamp=arr1[0];
+              var y1axisvalue=arr1[1];
+              jsonobject.x=timestamp+18000000;
+              jsonobject.Value=y1axisvalue;
+              arrayOfObjects.push(jsonobject);
+              jsonobject={};
+            }
+            // this.$.Generation_spinner.hide();
+            return arrayOfObjects;
+        }
+      },
+
+      computeKPIDATA:function(data,label,unit){
+           // console.log("KPI", data);
+            var num=1;
+            var jsonobject={
+              label:label+" (min)",
+              uom: unit,
+              value: (data[0][0].toFixed(2).toString())
+            };
+             var jsonobject1={
+              label:label+ " (avg)",
+              uom: unit,
+              value: (data[0][1].toFixed(2).toString())
+            };
+             var jsonobject2={
+              label:label +" (max)",
+              uom: unit,
+              value: (data[0][2].toFixed(2).toString())
+            };
+               
+          array=[jsonobject,jsonobject1,jsonobject2];
+        //  console.log(data[0][1]);
+          return array;
+          //console.log(array);
+        },
+
+        computeKPIBARDATA:function(data,value){
+       //   console.log("KPIBAR", data);
+          array=([data[0][1]]/value*100).toFixed(2).toString();
+       //   console.log(data[0][1]);
+          return array;
+          //console.log(array);
+        }
+    });
+  </script>
+</dom-module>

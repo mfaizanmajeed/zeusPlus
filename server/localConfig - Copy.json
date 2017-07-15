@@ -1,0 +1,17 @@
+{
+  "development": {
+    "note": "Out of the box, the predix-webapp-starter app uses mock data, so these values are not required.  Set these values for connecting to real Predix services.",
+    "uaaURL": "{}"#"https://92fb1b3a-7858-4fe8-ba05-d7f6d87dfa63.predix-uaa.run.aws-usw02-pr.ice.predix.io",
+    "base64ClientCredential": "{}"#"ZmFpemkxMjM6bm9tYW4=",
+    "loginBase64ClientCredential": "{}" #"ZmFpemk6bm9tYW4=",
+    "appURL": "http://localhost:5000",
+    "timeseriesURL": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io",
+    "timeseriesZoneId": "ea2106c6-3dee-46d6-af49-7e7d91dcbc3a",
+    "assetURL": "https://predix-asset.run.aws-usw02-pr.ice.predix.io",
+    "assetZoneId": "a4ef9965-889d-4090-8d8b-be5cc79063bf",
+    "windServiceURL": "https://faizan-winddata-timeseries-service.run.aws-usw02-pr.ice.predix.io",
+    "websocketServerURL": "/live",
+    "rmdDatasourceURL": "https://zeus-client1.run.aws-usw02-pr.ice.predix.io",
+    "rmdDocsURL": "https://raw.githubusercontent.com/PredixDev/predix-rmd-ref-app/master/README.md"
+  }
+}

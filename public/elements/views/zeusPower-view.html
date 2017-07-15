@@ -1,0 +1,754 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html ">
+<link rel="import" href="../../bower_components/px-sample-cards/blank-card.html">
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../kpi-bar/kpi-bar.html">
+
+<dom-module id="zeusPower-view">
+  <template>
+
+     <px-card icon='fa-bolt' header-text="Current (A)">
+      <px-vis-timeseries id="Current-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Current}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{OPanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+  <kpi-bar 
+      datapoints={{KPIIRMSA}}
+      overall-label="Percentage"
+      overall-value={{KPIBARIRMSA}}
+      overall-max=100>
+    
+  </kpi-bar>
+  
+<px-card icon='fa-bolt' header-text="Power (W)">
+    <px-vis-timeseries id="Power-chart"
+     height="200"
+     width="1000"
+     prevent-resize="true"
+     selection-type="xy"
+     register-location="top"
+     chart-data={{Power}}
+     include-all-series="true"></px-vis-timeseries>
+
+     <px-data-table table-data="{{IPanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+  </px-card>
+
+  <kpi-bar 
+      datapoints={{KPIWATTA}}
+      overall-label="Percentage"
+      overall-value={{KPIBARWATTA}}
+      overall-max=100>
+    
+  </kpi-bar>
+
+  <px-card icon='fa-lightbulb-o' header-text="Apparent Power (VA)">
+      <px-vis-timeseries id="Apparent-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Apparent}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{EFFanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+    <kpi-bar 
+      datapoints={{KPIVAA}}
+      overall-label="Percentage"
+      overall-value={{KPIBARVAA}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+    <px-card icon='fa-lightbulb-o' header-text="Reactive Power (VAR)">
+      <px-vis-timeseries id="Reactive-chart"
+       height="200"
+       width="1000"
+       prevent-resize="true"
+       selection-type="xy"
+       register-location="top"
+       chart-data={{Reactive}}
+       include-all-series="true"></px-vis-timeseries>
+
+       <px-data-table table-data="{{EFFanal}}" table-rows="true" hide-pagination-control="true"></px-data-table>
+
+    </px-card>
+
+     <kpi-bar 
+      datapoints={{KPIVARA}}
+      overall-label="Percentage"
+      overall-value={{KPIBARVARA}}
+      overall-max=100>
+    
+    </kpi-bar>
+
+     <iron-ajax id="requestKPIIRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:IRMSA"
+      handle-as="json"
+      on-response="_onResponseKPIIRMSA"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARIRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:IRMSA"
+      handle-as="json"
+      on-response="_onResponseKPIBARIRMSA"></iron-ajax>  
+
+    <iron-ajax id="requestKPIWATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:WATTA"
+      handle-as="json"
+      on-response="_onResponseKPIWATTA"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARWATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:WATTA"
+      handle-as="json"
+      on-response="_onResponseKPIBARWATTA"></iron-ajax>  
+
+    <iron-ajax id="requestKPIVAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VAA"
+      handle-as="json"
+      on-response="_onResponseKPIVAA"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARVAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VAA"
+      handle-as="json"
+      on-response="_onResponseKPIBARVAA"></iron-ajax>  
+
+    <iron-ajax id="requestKPIVARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VARA"
+      handle-as="json"
+      on-response="_onResponseKPIVARA"></iron-ajax>
+
+
+    <iron-ajax id="requestKPIBARVARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/avg?a=zeus:VARA"
+      handle-as="json"
+      on-response="_onResponseKPIBARVARA"></iron-ajax> 
+  
+    <iron-ajax id="requestIRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:IRMSA"
+      handle-as="json"
+      on-response="_onResponseIRMSA"></iron-ajax>
+
+    <iron-ajax id="requestU1IRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U1IRMSA"
+      handle-as="json"
+      on-response="_onResponseU1IRMSA"></iron-ajax>
+
+    <iron-ajax id="requestU2IRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U2IRMSA"
+      handle-as="json"
+      on-response="_onResponseU2IRMSA"></iron-ajax>
+
+    <iron-ajax id="requestU3IRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U3IRMSA"
+      handle-as="json"
+      on-response="_onResponseU3IRMSA"></iron-ajax>
+
+    <iron-ajax id="requestU4IRMSA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U4IRMSA"
+      handle-as="json"
+      on-response="_onResponseU4IRMSA"></iron-ajax>
+
+    <iron-ajax id="requestWATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:WATTA"
+      handle-as="json"
+      on-response="_onResponseWATTA"></iron-ajax>
+
+    <iron-ajax id="requestU1WATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U1WATTA"
+      handle-as="json"
+      on-response="_onResponseU1WATTA"></iron-ajax>
+
+    <iron-ajax id="requestU2WATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U2WATTA"
+      handle-as="json"
+      on-response="_onResponseU2WATTA"></iron-ajax>
+
+    <iron-ajax id="requestU3WATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U3WATTA"
+      handle-as="json"
+      on-response="_onResponseU3WATTA"></iron-ajax>
+
+    <iron-ajax id="requestU4WATTA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U4WATTA"
+      handle-as="json"
+      on-response="_onResponseU4WATTA"></iron-ajax>  
+
+    <iron-ajax id="requestVAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:VAA"
+      handle-as="json"
+      on-response="_onResponseVAA"></iron-ajax>
+
+    <iron-ajax id="requestU1VAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U1VAA"
+      handle-as="json"
+      on-response="_onResponseU1VAA"></iron-ajax>
+
+    <iron-ajax id="requestU2VAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U2VAA"
+      handle-as="json"
+      on-response="_onResponseU2VAA"></iron-ajax>
+
+    <iron-ajax id="requestU3VAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U3VAA"
+      handle-as="json"
+      on-response="_onResponseU3VAA"></iron-ajax>
+
+    <iron-ajax id="requestU4VAA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U4VAA"
+      handle-as="json"
+      on-response="_onResponseU4VAA"></iron-ajax>
+
+     <iron-ajax id="requestVARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:VARA"
+      handle-as="json"
+      on-response="_onResponseVARA"></iron-ajax>
+
+    <iron-ajax id="requestU1VARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U1VARA"
+      handle-as="json"
+      on-response="_onResponseU1VARA"></iron-ajax>
+
+    <iron-ajax id="requestU2VARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U2VARA"
+      handle-as="json"
+      on-response="_onResponseU2VARA"></iron-ajax>
+
+    <iron-ajax id="requestU3VARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U3VARA"
+      handle-as="json"
+      on-response="_onResponseU3VARA"></iron-ajax>
+
+    <iron-ajax id="requestU4VARA"
+      auto
+      url="https://zeus-client.run.aws-usw02-pr.ice.predix.io/datapoints_latest?t=zeus:U4VARA"
+      handle-as="json"
+      on-response="_onResponseU4VARA"></iron-ajax>  
+
+     
+
+  </template>
+  <script>
+    Polymer({
+      is: 'zeusPower-view',
+      properties: {
+        Current: {
+            computed: 'computePOWDATA(IRMSAData,U1IRMSAData,U2IRMSAData,U3IRMSAData,U4IRMSAData)'
+        },
+        Power: {
+            computed: 'computePOWDATA(WATTAData,U1WATTAData,U2WATTAData,U3WATTAData,U4WATTAData)'
+        },
+        Apparent: {
+            computed: 'computePOWDATA(VAAData,U1VAAData,U2VAAData,U3VAAData,U4VAAData)'
+        },
+        Reactive: {
+            computed: 'computePOWDATA(VARAData,U1VARAData,U2VARAData,U3VARAData,U4VARAData)'
+        },
+         KPIIRMSA: {
+            computed: 'computeKPIDATA(KPIIRMSAData,"Current","KA")'
+            
+        },
+
+         KPIBARIRMSA: {
+            computed: 'computeKPIBARDATA(KPIBARIRMSAData,2500)'
+            
+        },
+
+        KPIWATTA: {
+            computed: 'computeKPIDATA(KPIWATTAData,"Power","KW")'
+            
+        },
+
+         KPIBARWATTA: {
+            computed: 'computeKPIBARDATA(KPIBARWATTAData,300000)'
+            
+        },
+
+         KPIVAA: {
+            computed: 'computeKPIDATA(KPIVAAData,"Apparent Power","KVA")'
+            
+        },
+
+         KPIBARVAA: {
+            computed: 'computeKPIBARDATA(KPIBARVAAData,300000)'
+            
+        },
+        KPIVARA: {
+            computed: 'computeKPIDATA(KPIVARAData,"Reactive Power","KVAR")'
+            
+        },
+
+         KPIBARVARA: {
+            computed: 'computeKPIBARDATA(KPIBARVARAData,300000)'
+            
+        },
+        IRMSAData:{
+            type: Array
+        },
+        U1IRMSAData:{
+            type: Array
+        },
+        U2IRMSAData:{
+            type: Array
+        },
+        U3IRMSAData:{
+            type: Array
+        },
+        U4IRMSAData:{
+            type: Array
+        },
+        WATTAData:{
+            type: Array
+        },
+        U1WATTAData:{
+            type: Array
+        },
+        U2WATTAData:{
+            type: Array
+        },
+        U3WATTAData:{
+            type: Array
+        },
+        U4WATTAData:{
+            type: Array
+        },
+        VAAData:{
+            type: Array
+        },
+        U1VAAData:{
+            type: Array
+        },
+        U2VAAData:{
+            type: Array
+        },
+        U3VAAData:{
+            type: Array
+        },
+        U4VAAData:{
+            type: Array
+        },
+        VARAData:{
+            type: Array
+        },
+        U1VARAData:{
+            type: Array
+        },
+        U2VARAData:{
+            type: Array
+        },
+        U3VARAData:{
+            type: Array
+        },
+        U4VARAData:{
+            type: Array
+        },
+        KPIIRMSAData:{
+            type: Array
+        },
+
+        KPIBARIRMSAData:{
+            type: Array
+        },
+        KPIWATTAData:{
+            type: Array
+        },
+
+        KPIBARWATTAData:{
+            type: Array
+        },
+        KPIVAAData:{
+            type: Array
+        },
+
+        KPIBARVAAData:{
+            type: Array
+        },
+        KPIVARAData:{
+            type: Array
+        },
+
+        KPIBARVARAData:{
+            type: Array
+        }
+        
+      },
+      _onResponseIRMSA:function(query){
+        this.IRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestIRMSA.generateRequest();
+       // console.log(this.IRMSAData );
+        }, 15000);
+      },
+
+       _onResponseU1IRMSA:function(query){
+        this.U1IRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU1IRMSA.generateRequest();
+        //  console.log(this.U1IRMSAData );
+        }, 15000);
+      },
+
+       _onResponseU2IRMSA:function(query){
+        this.U2IRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU2IRMSA.generateRequest();
+        //  console.log(this.U2IRMSAData );
+        }, 15000);
+      },
+
+       _onResponseU3IRMSA:function(query){
+        this.U3IRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU3IRMSA.generateRequest();
+        //  console.log(this.U2IRMSAData );
+        }, 15000);
+      },
+
+       _onResponseU4IRMSA:function(query){
+        this.U4IRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU4IRMSA.generateRequest();
+        //  console.log(this.U2IRMSAData );
+        }, 15000);
+      },
+
+      _onResponseWATTA:function(query){
+        this.WATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestWATTA.generateRequest();
+       // console.log(this.WATTAData );
+        }, 15000);
+      },
+
+       _onResponseU1WATTA:function(query){
+        this.U1WATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU1WATTA.generateRequest();
+        //  console.log(this.U1WATTAData );
+        }, 15000);
+      },
+
+       _onResponseU2WATTA:function(query){
+        this.U2WATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU2WATTA.generateRequest();
+        //  console.log(this.U2WATTAData );
+        }, 15000);
+      },
+
+       _onResponseU3WATTA:function(query){
+        this.U3WATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU3WATTA.generateRequest();
+        //  console.log(this.U2WATTAData );
+        }, 15000);
+      },
+
+       _onResponseU4WATTA:function(query){
+        this.U4WATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU4WATTA.generateRequest();
+        //  console.log(this.U2WATTAData );
+        }, 15000);
+      },
+
+      _onResponseVAA:function(query){
+        this.VAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestVAA.generateRequest();
+       // console.log(this.VAAData );
+        }, 15000);
+      },
+
+       _onResponseU1VAA:function(query){
+        this.U1VAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU1VAA.generateRequest();
+        //  console.log(this.U1VAAData );
+        }, 15000);
+      },
+
+       _onResponseU2VAA:function(query){
+        this.U2VAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU2VAA.generateRequest();
+        //  console.log(this.U2VAAData );
+        }, 15000);
+      },
+
+       _onResponseU3VAA:function(query){
+        this.U3VAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU3VAA.generateRequest();
+        //  console.log(this.U2VAAData );
+        }, 15000);
+      },
+
+       _onResponseU4VAA:function(query){
+        this.U4VAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU4VAA.generateRequest();
+        //  console.log(this.U2VAAData );
+        }, 15000);
+      },
+
+      _onResponseVARA:function(query){
+        this.VARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestVARA.generateRequest();
+       // console.log(this.VARAData );
+        }, 15000);
+      },
+
+       _onResponseU1VARA:function(query){
+        this.U1VARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU1VARA.generateRequest();
+        //  console.log(this.U1VARAData );
+        }, 15000);
+      },
+
+       _onResponseU2VARA:function(query){
+        this.U2VARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU2VARA.generateRequest();
+        //  console.log(this.U2VARAData );
+        }, 15000);
+      },
+
+       _onResponseU3VARA:function(query){
+        this.U3VARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU3VARA.generateRequest();
+        //  console.log(this.U2VARAData );
+        }, 15000);
+      },
+
+       _onResponseU4VARA:function(query){
+        this.U4VARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestU4VARA.generateRequest();
+        //  console.log(this.U2VARAData );
+        }, 15000);
+      },
+      _onResponseKPIIRMSA:function(query){
+        this.KPIIRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIIRMSA.generateRequest();
+         // console.log(this.KPIIRMSAData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARIRMSA:function(query){
+        this.KPIBARIRMSAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARIRMSA.generateRequest();
+         // console.log(this.KPIBARIRMSAData );
+        }, 15000);
+      },
+
+      _onResponseKPIWATTA:function(query){
+        this.KPIWATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIWATTA.generateRequest();
+         // console.log(this.KPIWATTAData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARWATTA:function(query){
+        this.KPIBARWATTAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARWATTA.generateRequest();
+         // console.log(this.KPIBARWATTAData );
+        }, 15000);
+      },
+
+       _onResponseKPIVAA:function(query){
+        this.KPIVAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIVAA.generateRequest();
+         // console.log(this.KPIVAAData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARVAA:function(query){
+        this.KPIBARVAAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARVAA.generateRequest();
+         // console.log(this.KPIBARVAAData );
+        }, 15000);
+      },
+
+      _onResponseKPIVARA:function(query){
+        this.KPIVARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIVARA.generateRequest();
+         // console.log(this.KPIVARAData );
+        }, 15000);
+      },
+
+       _onResponseKPIBARVARA:function(query){
+        this.KPIBARVARAData = query.detail.response.tags[0].results[0].values;
+        this.async(function() {
+        this.$.requestKPIBARVARA.generateRequest();
+         // console.log(this.KPIBARVARAData );
+        }, 15000);
+      },
+
+
+      computeGENDATA:function(data1){
+    //  console.log("computeGENDATA:",data1.length)
+        if (data1.length>0)
+        {
+            var arrayOfObjects=[];
+            for(var i=0;i<data1.length;i++){
+              var jsonobject={};
+              var arr1=data1[i];
+              var timestamp=arr1[0];
+              var y1axisvalue=arr1[1];
+              jsonobject.x=timestamp+18000000;
+              jsonobject.unit1=y1axisvalue;
+              arrayOfObjects.push(jsonobject);
+              jsonobject={};
+            }
+            // this.$.Generation_spinner.hide();
+            return arrayOfObjects;
+        }
+      },
+
+        computePOWDATA:function(data1,data2,data3,data4,data5){
+     //   console.log(data1.length,data2.length,data3.length,data4.length);
+        var minlength=0;
+        if (data1.length<=data2.length && data1.length<=data3.length && data1.length<=data4.length && data1.length<=data5.length)
+        {
+             minlength=data1.length;
+        }
+        else if (data2.length<=data1.length && data2.length<=data3.length && data2.length<=data4.length && data2.length<=data5.length)
+        {
+             minlength=data2.length;
+        }
+        else if (data3.length<=data1.length && data3.length<=data2.length && data3.length<=data4.length && data3.length<=data5.length)
+        {
+             minlength=data3.length;
+        }
+        else if (data4.length<=data1.length && data4.length<=data2.length && data4.length<=data3.length && data4.length<=data5.length)
+        {
+             minlength=data4.length;
+        }
+        else
+        {
+            minlength=data5.length;
+        }
+        
+      //  console.log(minlength);
+        if (minlength>0)
+        {
+              var arrayOfObjects=[];
+              for(var i=0;i<minlength;i++){
+                var jsonobject={};
+                var arr1=data1[i];
+                var arr2=data2[i];
+                var arr3=data3[i];
+                var arr4=data4[i];
+                var arr5=data5[i];
+                var timestamp=arr1[0];
+                var y1axisvalue=arr1[1];
+                var y2axisvalue=arr2[1];
+                var y3axisvalue=arr3[1];
+                var y4axisvalue=arr4[1];
+                var y5axisvalue=arr5[1];
+                //console.log(timestamp);
+                timestamp=timestamp+18000000;
+                jsonobject.x=timestamp;
+                //console.log(timestamp);
+                jsonobject.OverAll=y1axisvalue;
+                jsonobject.Unit1=y2axisvalue;
+                jsonobject.Unit2=y3axisvalue;
+                jsonobject.Unit3=y4axisvalue;
+                jsonobject.Unit4=y5axisvalue;
+                arrayOfObjects.push(jsonobject);
+                jsonobject={};
+              }
+              // this.$.Generation_spinner.hide();
+              return arrayOfObjects;
+        }    
+      },
+
+        computeKPIDATA:function(data,label,unit){
+           // console.log("KPI", data);
+            var num=1;
+            var jsonobject={
+              label:label+" (min)",
+              uom: unit,
+              value: ((data[0][0]/1000).toFixed(3).toString())
+            };
+             var jsonobject1={
+              label:label+ " (avg)",
+              uom: unit,
+              value: ((data[0][1]/1000).toFixed(3).toString())
+            };
+             var jsonobject2={
+              label:label +" (max)",
+              uom: unit,
+              value: ((data[0][2]/1000).toFixed(3).toString())
+            };
+               
+          array=[jsonobject,jsonobject1,jsonobject2];
+        //  console.log(data[0][1]);
+          return array;
+          //console.log(array);
+        },
+
+        computeKPIBARDATA:function(data,value){
+   //       console.log("KPIBAR", data);
+          array=([data[0][1]]/value*100).toFixed(2).toString();
+       //   console.log(data[0][1]);
+          return array;
+          //console.log(array);
+        }
+    });
+  </script>
+</dom-module>
