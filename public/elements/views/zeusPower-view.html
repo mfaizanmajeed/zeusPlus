@@ -2,13 +2,23 @@
 <link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html ">
 <link rel="import" href="../../bower_components/px-sample-cards/blank-card.html">
 <link rel="import" href="../../bower_components/px-data-table/px-data-table.html">
+<link rel="import" href="../../bower_components/px-dropdown/px-dropdown.html">
+<link rel="import" href="../../bower_components/px-dropdown/px-dropdown-content.html">
+<link rel="import" href="../asset-browser/asset-browser.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../kpi-bar/kpi-bar.html">
 
 <dom-module id="zeusPower-view">
   <template>
+    <px-dropdown id="refreshFrequencyDropdown"
+      display-value="Current"
+      style="position: absolute; top: 18px; right: 50px; width: 150px; padding-right: 5px">
+      <px-dropdown-content extend-dropdown='true' extend-dropdown-by='25' max-cont-character-width='10'
+        items='[{"key":"0","val":"OverAll"},{"key":"1","val":"Current"},{"key":"2","val":"Power"},{"key":"3","val":"Active Power"},{"key":"4","val":"Reactive Power"}]'>
+      </px-dropdown-content>
+    </px-dropdown>       
 
-     <px-card icon='fa-bolt' header-text="Current (A)">
+     <px-card icon='fa-bolt' header-text="Current (A)" hidden$="{{!ct}}">
       <px-vis-timeseries id="Current-chart"
        height="200"
        width="1000"
@@ -22,7 +32,7 @@
 
     </px-card>
 
-  <kpi-bar 
+  <kpi-bar hidden$="{{!ct}}"
       datapoints={{KPIIRMSA}}
       overall-label="Percentage"
       overall-value={{KPIBARIRMSA}}
@@ -30,7 +40,7 @@
     
   </kpi-bar>
   
-<px-card icon='fa-bolt' header-text="Power (W)">
+<px-card icon='fa-bolt' header-text="Power (W)" hidden$="{{!pr}}">
     <px-vis-timeseries id="Power-chart"
      height="200"
      width="1000"
@@ -44,7 +54,7 @@
 
   </px-card>
 
-  <kpi-bar 
+  <kpi-bar hidden$="{{!pr}}"
       datapoints={{KPIWATTA}}
       overall-label="Percentage"
       overall-value={{KPIBARWATTA}}
@@ -52,7 +62,7 @@
     
   </kpi-bar>
 
-  <px-card icon='fa-lightbulb-o' header-text="Apparent Power (VA)">
+  <px-card icon='fa-lightbulb-o' header-text="Apparent Power (VA)" hidden$="{{!ap}}">
       <px-vis-timeseries id="Apparent-chart"
        height="200"
        width="1000"
@@ -66,7 +76,7 @@
 
     </px-card>
 
-    <kpi-bar 
+    <kpi-bar hidden$="{{!ap}}"
       datapoints={{KPIVAA}}
       overall-label="Percentage"
       overall-value={{KPIBARVAA}}
@@ -74,7 +84,7 @@
     
     </kpi-bar>
 
-    <px-card icon='fa-lightbulb-o' header-text="Reactive Power (VAR)">
+    <px-card icon='fa-lightbulb-o' header-text="Reactive Power (VAR)" hidden$="{{!rp}}">
       <px-vis-timeseries id="Reactive-chart"
        height="200"
        width="1000"
@@ -88,7 +98,7 @@
 
     </px-card>
 
-     <kpi-bar 
+     <kpi-bar hidden$="{{!rp}}"
       datapoints={{KPIVARA}}
       overall-label="Percentage"
       overall-value={{KPIBARVARA}}
@@ -412,6 +422,26 @@
 
         KPIBARVARAData:{
             type: Array
+        },
+        ct: {
+          type: Boolean,
+          value: true
+        },
+        pr: {
+          type: Boolean,
+          value: false
+        },
+        ap: {
+          type: Boolean,
+          value: false
+        },
+        rp: {
+          type: Boolean,
+          value: false
+        },
+        all: {
+          type: Boolean,
+          value: false
         }
         
       },
@@ -748,7 +778,59 @@
        //   console.log(data[0][1]);
           return array;
           //console.log(array);
-        }
+        },
+         ready: function(){
+        // set copy of 'this' for callback function use below
+        
+        var that = this;
+        // initialize refresh interval
+        this.refreshTimerInterval = 0;
+        
+
+         // Set refresh dropdown behavior
+        this.$.refreshFrequencyDropdown.addEventListener('px-dropdown-value-changed', function(evt){
+          //var interval = 0;
+          if (event.detail.key==0)
+          {
+              //that.fq=!that.fq;
+              that.ct=true;
+              that.pr=true;
+              that.ap=true;
+              that.rp=true;
+          }
+          else if (event.detail.key==1)
+          {
+              //that.fq=!that.fq;
+              that.ct=true;
+              that.pr=false;
+              that.ap=false;
+              that.rp=false;
+          }
+          else if (event.detail.key==2)
+          {
+              that.ct=false;
+              that.pr=true;
+              that.ap=false;
+              that.rp=false;
+          }
+          else if (event.detail.key==3)
+          {
+              that.ct=false;
+              that.pr=false;
+              that.ap=true;
+              that.rp=false;
+          }
+          else if (event.detail.key==4)
+          {
+              that.ct=false;
+              that.pr=false;
+              that.ap=false;
+              that.rp=true;
+          }
+
+        });
+
+      }
     });
   </script>
 </dom-module>
